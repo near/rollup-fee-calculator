@@ -1,0 +1,21 @@
+{
+  "name": "rollup-fee-calculator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc && node index.js"
+  },
+  "dependencies": {
+    "@cowprotocol/ts-dune-client": "^0.0.2",
+    "@types/node": "^20.11.6",
+    "axios": "^1.6.6",
+    "dotenv": "^16.4.0",
+    "near-lake-framework": "^1.0.1",
+    "node-fetch": "^3.3.2",
+    "redis": "^4.6.12"
+  },
+  "devDependencies": {
+    "typescript": "^4.6.4"
+  }
+}
