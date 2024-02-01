@@ -1,10 +1,16 @@
-FROM node:12.18.1
+FROM node:18 
 
-WORKDIR /app
-COPY package.json package.json
-COPY package-lock.json package-lock.json
+# Create app directory
+WORKDIR /usr/src/app
+
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
+
+
+# Install app dependencies
 RUN npm install
-COPY index.ts index.ts
+
+COPY . ./
 RUN npm run build
 EXPOSE 3000
 
