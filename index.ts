@@ -7,7 +7,6 @@ import axios from "axios";
 // dotenv.config({ path: __dirname + "/.env" });
 const DUNE_API_KEY = process.env.DUNE_API_KEY;
 const REDIS_URL = process.env.REDIS_URL;
-const REDIS_PASSWORD = process.env.REDIS_PASSWORD;
 const COIN_API_KEY = process.env.COIN_API_KEY;
 const client = new DuneClient(DUNE_API_KEY ?? "");
 const port = process.env.PORT || 3000;
@@ -23,8 +22,6 @@ async function sendQuery(queryID: number) {
 async function putInRedis() {
   const redisClient = await createClient({
     url: REDIS_URL,
-    port: 6379,                 
-    password: REDIS_PASSWORD,
   })
     .on("error", (err) => console.log("Redis Client Error", err))
     .connect();

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node index.js"
+    "start": "node index.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "@cowprotocol/ts-dune-client": "^0.0.2",

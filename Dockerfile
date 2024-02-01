@@ -10,7 +10,7 @@ COPY package*.json ./
 # Install app dependencies
 RUN npm install
 
-COPY . ./
+COPY . .
 RUN npm run build
 EXPOSE 3000
 
