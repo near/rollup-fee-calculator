@@ -1,4 +1,4 @@
-FROM node:18 
+FROM node:18-alpine
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -8,10 +8,10 @@ COPY package*.json ./
 
 
 # Install app dependencies
-RUN npm install
+RUN npm ci
 
 COPY . .
 RUN npm run build
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+CMD [ "node", "main.js" ]

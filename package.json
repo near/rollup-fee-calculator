@@ -1,16 +1,13 @@
 {
   "name": "rollup-fee-calculator",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.ts",
-  "type": "module",
-  "scripts": {
-    "start": "node index.ts",
-    "build": "tsc"
+  "description": "rollup fee calculator",
+  "engines": {
+    "node": ">= 18.12 <19"
   },
   "dependencies": {
     "@cowprotocol/ts-dune-client": "^0.0.2",
-    "@types/node": "^20.11.6",
+    "@types/node": "~18",
     "axios": "^1.6.6",
     "dotenv": "^16.4.0",
     "near-lake-framework": "^1.0.1",
@@ -18,6 +15,11 @@
     "redis": "^4.6.12"
   },
   "devDependencies": {
-    "typescript": "^4.6.4"
+    "typescript": "~5.0"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "build": "tsc -p tsconfig.json"
   }
+
 }
