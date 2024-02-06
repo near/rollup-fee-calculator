@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 import * as http from "http";
 import axios from "axios";
 
-// dotenv.config({ path: __dirname + "/.env" });
+dotenv.config();
 const DUNE_API_KEY = process.env.DUNE_API_KEY;
 const REDIS_URL = process.env.REDIS_URL;
 const COIN_API_KEY = process.env.COIN_API_KEY;
