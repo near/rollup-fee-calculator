@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 import * as http from "http";
 import axios from "axios";
 
-// dotenv.config({ path: __dirname + "/.env" });
+dotenv.config();
 const DUNE_API_KEY = process.env.DUNE_API_KEY;
 const REDIS_URL = process.env.REDIS_URL;
 const COIN_API_KEY = process.env.COIN_API_KEY;
@@ -13,6 +13,7 @@ const port = process.env.PORT || 3000;
 const queryID = 3369073;
 const cost_per_4mb = 0.00515;
 const cost_per_1mb = 0.00287;
+const cost_per_mb_celestia = 0.01923;
 
 async function sendQuery(queryID: number) {
   const executionResult = await client.refresh(queryID);
@@ -31,6 +32,7 @@ async function putInRedis() {
     return;
   }
   let weeklyPrices = (await getNearWeeklyPrice()).data;
+  let celestiaWeeklyPrices = (await getCelestiaWeeklyPrice()).data;
   for (let i = 0; i < result.length; i++) {
     for (let a = 0; a < weeklyPrices.length; a++) {
       let redisJson = JSON.parse(JSON.stringify([result[i]]));
@@ -44,6 +46,14 @@ async function putInRedis() {
       ) {
         let weekly_approx_near_price =
           (weeklyPrices[a].rate_high + weeklyPrices[a].rate_low) / 2;
+        let weekly_approx_celestia_price =
+          (celestiaWeeklyPrices[a].rate_high +
+            celestiaWeeklyPrices[a].rate_low) /
+          2;
+        let weekly_approx_celestia_l2_calldata_cost_1mb =
+          weekly_approx_celestia_price *
+          cost_per_mb_celestia *
+          (result[i].calldata_mb as number);
         let weekly_approx_near_l2_calldata_cost_1mb =
           weekly_approx_near_price *
           cost_per_1mb *
@@ -57,6 +67,8 @@ async function putInRedis() {
           weekly_approx_near_l2_calldata_cost_1mb;
         redisJson[0].weekly_approx_near_l2_calldata_cost_4mb_usd =
           weekly_approx_near_l2_calldata_cost_4mb;
+        redisJson[0].weekly_approx_celestia_l2_calldata_cost_1mb_usd =
+          weekly_approx_celestia_l2_calldata_cost_1mb;
         let current = await getFromRedis(name);
         if (current) {
           let new_value = (JSON.parse(current) as string[]).concat(redisJson);
@@ -80,6 +92,7 @@ async function getFromRedis(name: string): Promise<string | null> {
 }
 
 const server = http.createServer(async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method === "GET" && req.url?.startsWith("/getByName")) {
     const urlParams = new URLSearchParams(req.url.slice(req.url.indexOf("?")));
     const name = urlParams.get("name");
@@ -120,6 +133,25 @@ async function getNearWeeklyPrice() {
     method: "get",
     maxBodyLength: Infinity,
     url: "https://rest.coinapi.io/v1/exchangerate/NEAR/USD/history",
+    headers: {
+      Accept: "application/json",
+      "X-CoinAPI-Key": COIN_API_KEY,
+    },
+    params: {
+      period_id: "7DAY",
+      time_start: "2024-01-01T00:00:00",
+      limit: 100,
+    },
+  };
+
+  return await axios(config);
+}
+
+async function getCelestiaWeeklyPrice() {
+  let config = {
+    method: "get",
+    maxBodyLength: Infinity,
+    url: "https://rest.coinapi.io/v1/exchangerate/TIA/USD/history",
     headers: {
       Accept: "application/json",
       "X-CoinAPI-Key": COIN_API_KEY,
